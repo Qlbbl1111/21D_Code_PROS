@@ -21,6 +21,7 @@ extern pros::Imu inertial;
 
 //PNUEMATICS
 extern pros::ADIDigitalOut expansion;
+extern pros::ADIDigitalOut blocker;
 
 //SHIFT
 bool shift();

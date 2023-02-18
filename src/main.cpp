@@ -2,20 +2,42 @@
 
 /**
  * A callback function for LLEMU's center button.
- *
- * When this callback is fired, it will toggle line 2 of the LCD text between
- * "I was pressed!" and nothing.
  */
 void on_center_button() {
 	static bool pressed = false;
 	pressed = !pressed;
 	if (pressed) {
-		pros::lcd::set_text(2, "I was pressed!");
+		pros::lcd::set_text(1, "21Deez Nuts");
 	} else {
-		pros::lcd::clear_line(2);
+		pros::lcd::set_text(1, "21D");
 	}
 }
 
+/**
+ * A callback function for LLEMU's left button.
+ */
+void on_left_button() {
+	static bool pressed = false;
+	pressed = !pressed;
+	if (pressed) {
+		pros::lcd::set_text(1, "21Deez Nuts");
+	} else {
+		pros::lcd::set_text(1, "21D");
+	}
+}
+
+/**
+ * A callback function for LLEMU's right button.
+ */
+void on_right_button() {
+	static bool pressed = false;
+	pressed = !pressed;
+	if (pressed) {
+		pros::lcd::set_text(1, "21Deez Nuts");
+	} else {
+		pros::lcd::set_text(1, "21D");
+	}
+}
 /**
  * Runs initialization code. This occurs as soon as the program is started.
  *
@@ -24,9 +46,12 @@ void on_center_button() {
  */
 void initialize() {
 	pros::lcd::initialize();
-	pros::lcd::set_text(1, "21Deez Nuts");
+	pros::lcd::set_text(1, "21D");
 
+	pros::lcd::set_text(3, "No auton selected.");
+	pros::lcd::register_btn0_cb(on_left_button);
 	pros::lcd::register_btn1_cb(on_center_button);
+	pros::lcd::register_btn2_cb(on_right_button);
 }
 
 /**
@@ -76,14 +101,19 @@ void autonomous() {
  * task, not resume it from where it left off.
  */
 void opcontrol() {
+	driveLeftBack.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+	driveRightBack.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+	driveLeftFront.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+	driveRightFront.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
 	while (true)
 	{
+		setDriveMotors();
 		setFlywheelMotors();
 		setIntake();
-		setDriveMotors();
+		setIndexer();
 		triggerExpansion();
 
-		pros::delay(10);
+		pros::delay(20);
 	}
 	
 }

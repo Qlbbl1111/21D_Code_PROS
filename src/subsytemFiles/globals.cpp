@@ -20,6 +20,7 @@ pros::Imu inertial(16);
 
 //PNUEMATICS
 pros::ADIDigitalOut expansion(1);
+pros::ADIDigitalOut blocker(2);
 
 //SHIFT
 bool shift() {

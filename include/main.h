@@ -78,6 +78,7 @@ void opcontrol(void);
 #include "subsystemHeaders/flywheel.hpp"
 #include "subsystemHeaders/expansion.hpp"
 #include "subsystemHeaders/globals.hpp"
+#include "autons.hpp"
 //#include <iostream>
 #endif
 
