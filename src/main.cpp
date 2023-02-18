@@ -101,10 +101,7 @@ void autonomous() {
  * task, not resume it from where it left off.
  */
 void opcontrol() {
-	driveLeftBack.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-	driveRightBack.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-	driveLeftFront.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-	driveRightFront.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+	setBrakeMode(2);
 	while (true)
 	{
 		setDriveMotors();
