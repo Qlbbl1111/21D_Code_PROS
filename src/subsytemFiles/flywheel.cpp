@@ -15,10 +15,10 @@ void setFlywheel(int a) {
 void setFlywheelMotors() {
    //flywheel
     if (toggle && !toggle2) { //slow
-        setFlywheel(100);
+        setFlywheel(90);
     }
     else if (toggle2 && !toggle) { //fast
-        setFlywheel(150);
+        setFlywheel(115);
     }
     else {
         setFlywheel(0);

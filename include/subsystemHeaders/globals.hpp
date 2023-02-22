@@ -1,5 +1,4 @@
 #include "main.h"
-
 //MOTORS
 extern pros::Motor intake;
 extern pros::Motor indexer;

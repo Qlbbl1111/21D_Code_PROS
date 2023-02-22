@@ -19,10 +19,13 @@ void selectAunton(int auton) {
 }
 void closeRoller() {
     controller.print(0, 0, "Close Roller");
+    translatePID(500);
+    //rotatePID(90);
 }
 
 void farRoller() {
     controller.print(0, 0, "Far Roller");
+    translate(500, 90);
 }
 
 void skills() {

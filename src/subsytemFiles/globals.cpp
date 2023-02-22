@@ -1,5 +1,6 @@
 #include "main.h"
 
+pros::Imu inertial(16);
 //MOTORS
 pros::Motor intake(7, pros::E_MOTOR_GEARSET_36, true, pros::E_MOTOR_ENCODER_COUNTS);
 pros::Motor indexer(21, pros::E_MOTOR_GEARSET_06, true, pros::E_MOTOR_ENCODER_COUNTS);
@@ -14,9 +15,6 @@ pros::Motor driveLeftFront(12, pros::E_MOTOR_GEARSET_06, true, pros::E_MOTOR_ENC
 
 //CONTROLLER
 pros::Controller controller(pros::E_CONTROLLER_MASTER);
-
-//SENSORS
-pros::Imu inertial(16);
 
 //PNUEMATICS
 pros::ADIDigitalOut expansion(1);

@@ -2,6 +2,7 @@
 
 int autonSelect = 0;
 int auton = 0;
+
 /**
  * A callback function for LLEMU's center button.
  */
@@ -73,9 +74,13 @@ void on_right_button() {
  * to keep execution time for this mode under a few seconds.
  */
 void initialize() {
+	inertial.reset();
+	while (inertial.is_calibrating()) {
+		pros::delay(100);
+	}
 	pros::lcd::initialize();
 	pros::lcd::set_background_color(241, 0, 145);
-	pros::lcd::set_text(0, "21D - Auton Select");
+	pros::lcd::set_text(0, "21D - Auton Select ");
 	pros::lcd::set_text(2, "No auton selected.");
 	pros::lcd::set_text(4, "Not running auton.");
 	pros::lcd::set_text(6, "Left: Select auton.");
@@ -115,7 +120,7 @@ void competition_initialize() {}
  * from where it left off.
  */
 void autonomous() {
-	
+	setBrakeMode(0);
 	selectAunton(auton);
 }
 
