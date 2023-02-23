@@ -33,15 +33,9 @@ void setBrakeMode(int mode) {
     }
 }
 
-double avgDriveEndoders() {
-    return (fabs(driveLeftFront.get_position()) + fabs(driveLeftBack.get_position()) + fabs(driveLeftFront.get_position()) + fabs(driveLeftBack.get_position()))/4;
-}
-
 void resetEncoders() {
-    driveLeftFront.tare_position();
-    driveLeftBack.tare_position();
-    driveRightFront.tare_position();
-    driveRightBack.tare_position();
+    leftEncoder.reset();
+    rightEncoder.reset();
 }
 
 //DRIVER CONTROL FUNCTIONS
@@ -59,109 +53,70 @@ void setDriveMotors() {
 }
 
 //AUTON FUNCTIONS
-void translate(int units, int voltage) {
-    //Define Direction
-    int direction = abs(units)/units;
-    //Reset Encoders
-    resetEncoders();
-    inertial.tare_rotation();
-    //drive forward until units are reached
-    while (avgDriveEndoders() < abs(units)) {
-        setDrive(voltage * direction + inertial.get_rotation(), voltage * direction - inertial.get_rotation());
-        pros::delay(10);
-    }
-    //Brief Break
-    setDrive(-2*direction, -2*direction);
-    pros::delay(50);
-    //Reset Drive
-    setDrive(0, 0);
-}
+//Tuning Variables
+double kP = 0.0;
+double kD = 0.0;
 
-void translatePID(int units) {
-    int direction = abs(units)/units;
-    int previousError = 0;
-    int totalError = 0;
-    int error = 0;
+double TkP = 0.0;
+double TkD = 0.0;
 
-    //Tune here
-    double kP = 0.57;
-    double kI = 0.000002;
-    //Reset Encoders
-    resetEncoders();
-    inertial.tare_rotation();
-    //drive forward until units are reached
-    while (avgDriveEndoders() < abs(units)) {
-        error = units - abs(avgDriveEndoders());
-        totalError += error;
-        if (abs(totalError) > 127)
-            totalError = 0;
-        int motorPower = (error * kP + totalError * kI)*0.5;
-        setDrive(motorPower + inertial.get_rotation(), motorPower - inertial.get_rotation());
-        controller.print(0, 0, "Error: %d", error);
-        pros::delay(20);
-    }
-    setDrive(-2*direction, -2*direction);
-    pros::delay(50);
-    //Reset Drive
-    setDrive(0, 0);
-    controller.print(0, 0, "Error: %d", error);
-}
+int error; //sensorValue - desiredValue : Postion
+int pervError = 0; //postion 20ms ago
+int derivative; //error - pervError : Speed
 
-void rotatePID(int degrees) {
-    int previousError = 0;
-    int totalError = 0;
-    int error = 0;
+int turnError; //sensorValue - desiredValue : Postion
+int turnPervError = 0; //postion 20ms ago
+int turnDerivative; //error - pervError : Speed
 
-    //Tune here
-    double kP = 0;
-    double kI = 0;
-    double kD = 0;
-    //Reset Encoders
-    inertial.tare_rotation();
-    //drive forward until units are reached
-    while (fabs(inertial.get_rotation()) < abs(degrees)) {
-        error = degrees - inertial.get_rotation();
-        totalError += error;
-        if (abs(totalError) > 127)
-            totalError = 0;
-        int derivative = error - previousError;
-        int motorPower = (error * kP + totalError * kI + derivative * kD)*0.25;
-        setDrive(-motorPower, motorPower);
-        previousError = error; 
-        //cout << error;
-        pros::delay(20);
-    }
-    //Reset Drive
-    setDrive(0, 0);
-}
+//Variables modified for use
+bool enableDrivePID = true;
 
-void rotate(int degrees, int votage) {
-    //Define Direction
-    int direction = abs(degrees)/degrees;
-    //Reset IMU
-    inertial.tare_rotation();
-    //Rotate until degrees are reached
-    setDrive(-votage * direction, votage * direction);
-    while (fabs(inertial.get_rotation()) < abs(degrees) - 5) {
-        pros::delay(10);
-    }
-    //Coast for 100ms
-    setDrive(0, 0);
-    pros::delay(100);
+void drivePID() {
     
-    //Correct for overshoot
-    if(fabs(inertial.get_rotation()) > abs(degrees)) {
-        setDrive(0.5 * votage * direction, 0.5 * -votage * direction);
-        while (fabs(inertial.get_rotation()) > abs(degrees)) {
-            pros::delay(10);
+    resetEncoders();
+    inertial.tare_heading();
+    while(enableDrivePID) {
+
+        if (resetDrive) {
+            resetDrive = false;
+            resetEncoders();
         }
+        
+        int leftPosition = leftEncoder.get_value();
+        int rightPosition = rightEncoder.get_value();
+ 
+        ////////////////////////////////////////////////////
+        //Lateral Movement PID
+        /////////////////////////////////////////////////////////////////////////////////////////
+        int averagePosition = (leftPosition + rightPosition)/2;
+
+        //Proportional
+        error = averagePosition - desiredValue;
+
+        //Derivative
+        derivative = error - pervError;
+
+        double lateralMotorPower = (TkP * error) + (TkD * derivative);
+
+        ////////////////////////////////////////////////////
+        //Turning Movement PID
+        /////////////////////////////////////////////////////////////////////////////////////////
+        //int turnDiffrence = leftPosition - rightPosition;
+        int turnDiffrence = inertial.get_heading();
+
+        //Proportional
+        turnPervError = turnDiffrence - desiredTurnValue;
+
+        //Derivative
+        turnDerivative = turnError - turnPervError;
+
+        double turnMotorPower = (kP * turnError) + (kD * turnDerivative);
+
+
+        /////////////////////////////////////////////////////////////////////////////////////////
+
+        setDrive(lateralMotorPower + turnMotorPower, lateralMotorPower - turnMotorPower);
+  
+        pros::Task::delay(20);
     }
-    if(fabs(inertial.get_rotation()) < abs(degrees)) {
-        setDrive(0.5 * -votage * direction, 0.5 * votage * direction);
-        while (fabs(inertial.get_rotation()) > abs(degrees)) {
-            pros::delay(10);
-        }
-    }
-    //Reset Drive
-    setDrive(0, 0);
 }

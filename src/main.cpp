@@ -1,57 +1,40 @@
 #include "main.h"
 
 int autonSelect = 0;
-int auton = 0;
 
 /**
  * A callback function for LLEMU's center button.
  */
-void on_center_button() {
-	auton = autonSelect;
-	switch (auton) {
-		case 0:
-			pros::lcd::set_text(4, "Not running auton.");
-			break;
-		case 1:
-			pros::lcd::set_text(4, "Running auton: Close Roller");
-			break;
-		case 2:
-			pros::lcd::set_text(4, "Running auton: Far Roller");
-			break;
-		case 3:
-			pros::lcd::set_text(4, "Running auton: Skills");
-			break;
+void on_left_button() {
+	static bool pressed = false;
+	pressed = !pressed;
+	if (pressed) {
+		pros::lcd::set_text(1, "21Deez Nuts ");
+	} else {
+		pros::lcd::set_text(1, "21D ");
 	}
 } 
 
 /**
  * A callback function for LLEMU's left button.
  */
-void on_left_button() {
+void on_center_button() {
 	switch (autonSelect) {
 		case 0:
 			autonSelect = 1;
-			pros::lcd::set_text(2, "Slected auton: Close Roller");
-			auton = 0;
-			pros::lcd::set_text(4, "Not running auton.");
+			pros::lcd::set_text(3, "Slected auton: Close Roller");
 			break;
 		case 1:
 			autonSelect = 2;
-			pros::lcd::set_text(2, "Slected auton: Far Roller");
-			auton = 0;
-			pros::lcd::set_text(4, "Not running auton.");
+			pros::lcd::set_text(3, "Slected auton: Far Roller");
 			break;
 		case 2:
 			autonSelect = 3;
-			pros::lcd::set_text(2, "Slected auton: Skills");
-			auton = 0;
-			pros::lcd::set_text(4, "Not running auton.");
+			pros::lcd::set_text(3, "Slected auton: Skills");
 			break;
 		case 3:
 			autonSelect = 0;
-			pros::lcd::set_text(2, "No auton selected.");
-			auton = 0;
-			pros::lcd::set_text(4, "Not running auton.");
+			pros::lcd::set_text(3, "No auton selected.");
 
 			break;
 
@@ -65,7 +48,10 @@ void on_right_button() {
 	static bool pressed = false;
 	pressed = !pressed;
 	if (pressed) {
-	} else {}
+		pros::lcd::set_text(1, "21Deez Nuts ");
+	} else {
+		pros::lcd::set_text(1, "21D ");
+	}
 }
 /**
  * Runs initialization code. This occurs as soon as the program is started.
@@ -80,11 +66,10 @@ void initialize() {
 	}
 	pros::lcd::initialize();
 	pros::lcd::set_background_color(241, 0, 145);
-	pros::lcd::set_text(0, "21D - Auton Select ");
-	pros::lcd::set_text(2, "No auton selected.");
-	pros::lcd::set_text(4, "Not running auton.");
-	pros::lcd::set_text(6, "Left: Select auton.");
-	pros::lcd::set_text(7, "Center: Confirm auton.");
+	pros::lcd::set_text(1, "21D ");
+	pros::lcd::set_text(1, "Auton Selecter ");
+	pros::lcd::set_text(3, "No auton selected.");
+	pros::lcd::set_text(7, "Center: Select auton.");
 	pros::lcd::register_btn0_cb(on_left_button);
 	pros::lcd::register_btn1_cb(on_center_button);
 	pros::lcd::register_btn2_cb(on_right_button);
@@ -121,7 +106,7 @@ void competition_initialize() {}
  */
 void autonomous() {
 	setBrakeMode(0);
-	selectAunton(auton);
+	selectAunton(autonSelect);
 }
 
 /**

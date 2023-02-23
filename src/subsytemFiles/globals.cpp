@@ -1,6 +1,24 @@
 #include "main.h"
 
-pros::Imu inertial(16);
+//VARIBLES
+const double pi = 3.14159265358979323846;
+int desiredValue = 0;
+int desiredTurnValue = 0;
+int maxVoltage = 12;
+double translateFor(double distence, bool unit, int voltage) {
+    maxVoltage = voltage;
+    if(unit) {
+        desiredValue = 6.0*pi * desiredValue/360.0;
+    }else {
+        desiredValue = distence;
+    }
+}
+double rotateTo(double heading, int voltage) {
+    maxVoltage = voltage;
+    desiredTurnValue = heading;
+}
+
+bool resetDrive = false;
 //MOTORS
 pros::Motor intake(7, pros::E_MOTOR_GEARSET_36, true, pros::E_MOTOR_ENCODER_COUNTS);
 pros::Motor indexer(21, pros::E_MOTOR_GEARSET_06, true, pros::E_MOTOR_ENCODER_COUNTS);
@@ -16,9 +34,17 @@ pros::Motor driveLeftFront(12, pros::E_MOTOR_GEARSET_06, true, pros::E_MOTOR_ENC
 //CONTROLLER
 pros::Controller controller(pros::E_CONTROLLER_MASTER);
 
+//SENSORS
+pros::Imu inertial(16);
+pros::ADIDigitalIn select('D');
+pros::ADIEncoder leftEncoder('E', 'F', false);
+pros::ADIEncoder rightEncoder('G', 'H ', true);
+
+
 //PNUEMATICS
-pros::ADIDigitalOut expansion(1);
-pros::ADIDigitalOut blocker(2);
+pros::ADIDigitalOut expansion('A');
+pros::ADIDigitalOut blocker('B');
+pros::ADIDigitalOut compesser('C');
 
 //SHIFT
 bool shift() {

@@ -19,13 +19,19 @@ void selectAunton(int auton) {
 }
 void closeRoller() {
     controller.print(0, 0, "Close Roller");
-    translatePID(500);
-    //rotatePID(90);
+    pros::Task pid(drivePID);
+    resetDrive = true;
+    translateFor(6, true, 10);
+    rotateTo(90, 8);
+    pros::Task::delay(20);
+    resetDrive = true;
+    translateFor(-6, true, 10);
+    rotateTo(0, 8);
 }
 
 void farRoller() {
     controller.print(0, 0, "Far Roller");
-    translate(500, 90);
+    pros::Task pid(drivePID);
 }
 
 void skills() {

@@ -16,12 +16,14 @@ void setFlywheelMotors() {
    //flywheel
     if (toggle && !toggle2) { //slow
         setFlywheel(90);
+        compesser.set_value(true);
     }
     else if (toggle2 && !toggle) { //fast
-        setFlywheel(115);
+        compesser.set_value(true);
     }
     else {
         setFlywheel(0);
+        compesser.set_value(false);
     }
     if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_R2) && shift() == false) {//slow
         if (!latch) {
